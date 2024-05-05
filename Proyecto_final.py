@@ -18,16 +18,48 @@ def crear_navegador(url):
     navegador.get(url)
     return navegador
 
+
+def buscar_producto_amazon(producto, cantidad_paginas):
+
+    navegador=crear_navegador("https://www.amazon.com.mx/")
+    time.sleep(10)
+
+    buscador = navegador.find_element(By.ID, "twotabsearchtextbox")
+    buscador.send_keys(producto)
+    time.sleep(1)
+    boton_buscar = navegador.find_element(By.ID, "nav-search-submit-button")
+    boton_buscar.click()
+    time.sleep(1)
+
+    datos = {"nombre":[],"precio":[],"rating":[]}
+
+    for i in range(cantidad_paginas):
+        soup = BeautifulSoup(navegador.page_source, "html5lib")
+        nombres = soup.find_all("span", attrs={"class":"a-size-base-plus a-color-base"})
+        ratings = soup.find_all("span", attrs={"class":"a-icon-alt"})
+        precios = soup.find_all("span", attrs={"class":"a-price-whole"})
+        for nombre, precio, rating, in zip(nombres, precios, ratings):
+            datos["nombre"].append(nombre.text)
+            datos["precio"].append(precio.text)
+            datos["rating"].append(rating.text)
+        boton_siguiente = navegador.find_element(By.LINK_TEXT, "Siguiente")
+        boton_siguiente.click()
+        time.sleep(3)
+
+    df = pd.DataFrame(datos)
+    df.to_csv("Datasets/productos_amazon2.csv")
+
+
 def buscar_producto_mercadolibre(producto,cantidad_paginas):
     navegador2 = crear_navegador("https://www.mercadolibre.com.mx/")
 
     buscador2 = navegador2.find_element(By.ID, "cb1-edit")
     buscador2.send_keys(producto)
-    time.sleep(3)
+    time.sleep(1)
 
     botonbuscar = navegador2.find_element(By.CLASS_NAME,"nav-search-btn")
     botonbuscar.click()
-    time.sleep(3)
+    time.sleep(1)
 
     datos2 = {"nombre":[], "precio": [], "rating": []}
 
@@ -64,4 +96,9 @@ def buscar_producto_mercadolibre(producto,cantidad_paginas):
     df.to_csv("Datasets/productos_mercadolibre.csv")
 
 if __name__ == "__main__":
-    buscar_producto_mercadolibre("zapatillas deportivas",2)
+    buscar_producto_amazon("juegos xbox x", 1)
+    buscar_producto_mercadolibre("juegos xbox x",1)
+
+
+
+

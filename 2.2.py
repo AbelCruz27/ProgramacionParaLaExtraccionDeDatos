@@ -39,7 +39,7 @@ class PaisMySQL(MySQLConnect):
         try:
             conexion = self.conectar()
             cursor = conexion.cursor()
-            sql = "INSERT INTO Pais (id, nombre) VALUES (%s, %s)"
+            sql = "INSERT INTO Pais (id, nombre) VALUES (4, 'Canada');"
             valores = (id, nombre)
             cursor.execute(sql, valores)
             conexion.commit()
@@ -57,7 +57,7 @@ class PaisMySQL(MySQLConnect):
         if conexion:
             try:
                 cursor = conexion.cursor()
-                query = "UPDATE Pais SET nombre = %s WHERE nombre = %s"
+                query = "UPDATE Pais SET nombre = 'República Francesa' WHERE id = 5;"
                 cursor.execute(query, (nuevo_nombre, nombre))
                 conexion.commit()
                 return True
@@ -74,7 +74,7 @@ class PaisMySQL(MySQLConnect):
         if conexion:
             try:
                 cursor = conexion.cursor()
-                query = "DELETE FROM Pais WHERE id = %s"
+                query = "DELETE FROM Pais WHERE id = 1"
                 cursor.execute(query, (id,))
                 conexion.commit()
                 return True
@@ -111,7 +111,7 @@ class OlimpiadaMySQL(MySQLConnect):
         try:
             conexion = self.conectar()
             cursor = conexion.cursor()
-            sql = "INSERT INTO Olimpiada (id, year) VALUES (%s, %s)"
+            sql = "INSERT INTO Olimpiada (id, year) VALUES (4, 2012);"
             valores = (id, year)
             cursor.execute(sql, valores)
             conexion.commit()
@@ -129,7 +129,7 @@ class OlimpiadaMySQL(MySQLConnect):
         if conexion:
             try:
                 cursor = conexion.cursor()
-                query = "UPDATE Olimpiada SET year = %s WHERE year = %s"
+                query = "UPDATE Olimpiada SET year = 2008 WHERE id = 3;"
                 cursor.execute(query, (nuevo_year, year))
                 conexion.commit()
                 return True
@@ -146,7 +146,7 @@ class OlimpiadaMySQL(MySQLConnect):
         if conexion:
             try:
                 cursor = conexion.cursor()
-                query = "DELETE FROM Olimpiada WHERE id = %s"
+                query = "DELETE FROM Olimpiada WHERE id = 1"
                 cursor.execute(query, (id,))
                 conexion.commit()
                 return True
@@ -183,7 +183,7 @@ class ResultadosMySQL(MySQLConnect):
         try:
             conexion = self.conectar()
             cursor = conexion.cursor()
-            sql = "INSERT INTO Resultados (idOlimpiada, idPais, idGenero, oro, plata, bronce) VALUES (%s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO Resultados (idOlimpiada, idPais, idGenero, oro, plata, bronce) VALUES (10, 12, 11, 21, 13, 7);"
             valores = (idOlimpiada, idPais, idGenero, oro, plata, bronce)
             cursor.execute(sql, valores)
             conexion.commit()
@@ -202,7 +202,7 @@ class ResultadosMySQL(MySQLConnect):
             if conexion:
                 try:
                     cursor = conexion.cursor()
-                    query = "UPDATE Resultados SET oro = %s, plata = %s, bronce = %s WHERE idOlimpiada = %s AND idPais = %s AND idGenero = %s"
+                    query = "UPDATE Resultados SET oro = 9, plata = 4, bronce = 5 WHERE idOlimpiada = 1 AND idPais = 2 AND idGenero = 1"
                     valores = (oro, plata, bronce, idOlimpiada, idPais, idGenero)
                     cursor.execute(query, valores)
                     conexion.commit()
@@ -223,7 +223,7 @@ class ResultadosMySQL(MySQLConnect):
         if conexion:
             try:
                 cursor = conexion.cursor()
-                query = "DELETE FROM Resultados WHERE idOlimpiada = %s AND idPais = %s AND idGenero = %s"
+                query = "DELETE FROM Resultados WHERE idOlimpiada = 1 AND idPais = 1 AND idGenero = 1"
                 valores = (idOlimpiada, idPais, idGenero)
                 cursor.execute(query, valores)
                 conexion.commit()
