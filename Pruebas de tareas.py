@@ -1,30 +1,30 @@
-from transformers import pipeline
-from googlesearch import search
+import pandas as pd
 
-# Cargar el modelo de lenguaje pre-entrenado para pregunta-respuesta
-nlp = pipeline("question-answering")
+def unir_archivos_csv2(archivo1, archivo2, archivo_salida):
+    df1 = pd.read_csv(archivo1)
+    df2 = pd.read_csv(archivo2)
 
-# Hacer una pregunta
-question = "¿Cuál es la capital de Francia?"
+    # Agregar la información adicional de df2 a las columnas correspondientes de df1
+    df_final = pd.concat([df1, df2], axis=1)
 
-# Realizar una búsqueda en Google para obtener más información
-search_results = list(search(question, num=3, stop=3, pause=2))
+    # Guardar el DataFrame resultante en un nuevo archivo CSV
+    df_final.to_csv(archivo_salida)
 
-# Contexto inicial para la respuesta
-context = ""
+    return df_final
 
-# Recopilar el contenido de las páginas web encontradas
-for url in search_results:
-    try:
-        # Aquí puedes usar tu método preferido para obtener el contenido de la página web
-        # Por ejemplo, podrías usar urllib, requests, BeautifulSoup, etc.
-        # Aquí lo he simplificado para mostrar el concepto.
-        context += url + ": " + "Contenido de la página\n"
-    except Exception as e:
-        print(f"No se pudo obtener el contenido de {url}: {e}")
+if __name__ == "__main__":
+    archivo1 = "Datasets/EmpleadosFinal.csv"
+    archivo2 = "Datasets/Informacionextra.csv"
+    archivo_salida = "Datasets/EmpleadosCompleto.csv"
 
-# Obtener la respuesta del modelo de pregunta-respuesta
-answer = nlp(question=question, context=context)
+    unir_archivos_csv2(archivo1, archivo2, archivo_salida)
 
-# Imprimir la respuesta
-print(answer)
+
+
+
+
+
+
+
+
+

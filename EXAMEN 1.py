@@ -1,4 +1,4 @@
-def contar_palabras_unicas(oracion):
+def contar_palabras_unicas():
     palabras = oracion.split()
     palabras_unicas = set(palabras)
     return {
@@ -6,7 +6,7 @@ def contar_palabras_unicas(oracion):
         'palabras_unicas': sorted(palabras_unicas)
     }
 oracion = "hola pedro hola juan"
-resultado = contar_palabras_unicas(oracion)
+resultado = contar_palabras_unicas()
 print(resultado)
 
 if __name__== "__main__":

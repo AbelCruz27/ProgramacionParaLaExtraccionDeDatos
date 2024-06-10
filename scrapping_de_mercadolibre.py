@@ -76,6 +76,9 @@ def boot_en_merado_libre(busqueda, cantidad):
 
     # Imprimir los nombres de los productos
     df = pd.DataFrame(data)
+    # Filtrar los datos
+    #df = df[~df['raiting'].str.contains("Más relevantes|,")]
+    #df = df.dropna()  # Eliminar filas con valores vacíos
     print(df)
     df.to_csv("dataset/mercadolibre.csv")
 

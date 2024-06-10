@@ -5,19 +5,19 @@ def exploracion(archivo, n):
     # imprimir las primeras n filas
     print("primeras n filas")
     print(df.head(n))
-
+    print("==============================")
     # imprimir las últimas n filas
     print("imprimir las ultimas n filas")
     print(df.tail(n))
-
+    print("==============================")
     # imprimir n filas aleatorias
     print("filas aleatorias")
     print(df.sample(n))
-
+    print("==============================")
     # imprimir la información estadística
     print("información estadística")
     print(df.describe())
-
+    print("==============================")
     # imprimir la información del dataframe
     print("información del dataFrame")
     print(df.info())
@@ -27,4 +27,4 @@ def exploracion(archivo, n):
 
 
 if __name__ == "__main__":
-    exploracion("C:/Users/abelc/PycharmProjects/Programacion Para La Extraccion De Datos/Datasets/olimpiadas.cvs",3)
+    exploracion("Datasets/olimpiadas.csv",3)

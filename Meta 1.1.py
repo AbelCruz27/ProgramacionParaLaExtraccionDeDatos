@@ -5,12 +5,6 @@ Created on Tue Feb 13 17:21:08 2024
 @author: alumnoFCA
 """
 
-# veny abel melendres cruz
-# grupo 952
-# fecha 13/02/2024
-# Duplicados. Desarrolle una función que dada una lista de números enteros,
-# retorna True si al menos un valor aparece dos veces,
-# y Falso si todos los elementos son distintos.
 
 # True
 def duplicados(nums):

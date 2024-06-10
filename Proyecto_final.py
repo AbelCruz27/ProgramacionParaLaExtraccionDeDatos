@@ -1,104 +1,372 @@
-import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
+from mysql.connector import connect, Error
 import pandas as pd
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-def crear_navegador(url):
-    driver = ChromeDriverManager()
-    s = Service(driver.install())
-    opc = Options()
-    opc.add_argument("--window-size=1500,1200")
-    navegador = webdriver.Chrome(service=s, options=opc)
-    navegador.get(url)
-    return navegador
+# Función para conectar con la base de datos
+def conectar():
+    try:
+        dbConexion = connect(host="localhost", user="root", password="quesadillas1", database="datos")
+        cursor = dbConexion.cursor()
+        print("Conexión establecida", "\n")
+        return dbConexion, cursor
+    except Error as e:
+        print("Error de conexión:", e)
+        return None, None
+
+def crear_tabla_amazon():
+    dbConexion, cursor = conectar()
+    try:
+        crear_tabla_query = """
+        CREATE TABLE IF NOT EXISTS amazon (
+            nombre VARCHAR(255),
+            rating VARCHAR(255),
+            precio VARCHAR(255),
+            fecha_entrega VARCHAR(255)
+        )
+        """
+        cursor.execute(crear_tabla_query)
+        dbConexion.commit()
+        print("Tabla amazon creada")
+    except Error as e:
+        print(e)
+
+def crear_tabla_mercado():
+    dbConexion, cursor = conectar()
+    try:
+        crear_tabla_query = """
+        CREATE TABLE IF NOT EXISTS mercado_libre (
+            nombre VARCHAR(255),
+            precio VARCHAR(255),
+            rating VARCHAR(255)
+        )
+        """
+        cursor.execute(crear_tabla_query)
+        dbConexion.commit()
+        print("Tabla mercado libre creada")
+    except Error as e:
+        print(e)
+
+def crear_tabla_productos_mejor_calificados_amazon():
+    dbConexion, cursor = conectar()
+    try:
+        crear_tabla_query = """
+        CREATE TABLE IF NOT EXISTS productos_mejor_calificados_amazon (
+            nombre VARCHAR(255),
+            rating VARCHAR(255)
+        )
+        """
+        cursor.execute(crear_tabla_query)
+        dbConexion.commit()
+        print("Tabla productos mejor calificados creada")
+    except Error as e:
+        print(e)
+def insertar_datos_desde_csv(archivo_csv):
+    dbConexion, cursor = conectar()
+    try:
+        # Leer el archivo CSV
+        df = pd.read_csv(archivo_csv)
+
+        # Iterar sobre las filas y agregarlas a la base de datos
+        for index, row in df.iterrows():
+            # Verificar si hay valores NaN en la fila
+            if row.notna().all():
+                insertar_datos_query = """
+                INSERT INTO amazon (nombre, rating, precio, fecha_entrega)
+                VALUES (%s, %s, %s, %s)
+                """
+                cursor.execute(insertar_datos_query, (row["nombre"], row["rating"], row["precio"], row["fecha_entrega"]))
+
+        dbConexion.commit()
+        print("Datos insertados")
+    except Error as e:
+        print(e)
+
+def crear_tabla_productos_mejor_calificados_mercado():
+    dbConexion, cursor = conectar()
+    try:
+        crear_tabla_query = """
+        CREATE TABLE IF NOT EXISTS productos_mejor_calificados_mercado (
+            nombre VARCHAR(255),
+            rating VARCHAR(255)
+        )
+        """
+        cursor.execute(crear_tabla_query)
+        dbConexion.commit()
+        print("Tabla productos mejor calificados de mercado libre creada")
+    except Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        dbConexion.close()
+
+def insertar_datos_desde_csv_2(archivo_csv2):
+    dbConexion, cursor = conectar()
+    try:
+        # Leer el archivo CSV
+        df = pd.read_csv(archivo_csv2)
+
+        # Iterar sobre las filas y agregarlas a la base de datos
+        for index, row in df.iterrows():
+            # Verificar si hay valores NaN en la fila
+            if row.notna().all():
+                insertar_datos_query = """
+                INSERT INTO mercado_libre (nombre, precio, rating)
+                VALUES (%s, %s, %s)
+                """
+                cursor.execute(insertar_datos_query, (row["nombre"], row["precio"], row["rating"]))
+
+        dbConexion.commit()
+        print("Datos insertados en tabla mercado libre")
+    except Error as e:
+        print(e)
 
 
-def buscar_producto_amazon(producto, cantidad_paginas):
+def insertar_datos_desde_csv_3(archivo_csv):
+    dbConexion, cursor = conectar()
+    try:
+        # Leer el archivo CSV
+        df = pd.read_csv(archivo_csv)
 
-    navegador=crear_navegador("https://www.amazon.com.mx/")
-    time.sleep(10)
+        # Iterar sobre las filas y agregarlas a la base de datos
+        for index, row in df.iterrows():
+            # Verificar si hay valores NaN en la fila
+            if row.notna().all():
+                insertar_datos_query = """
+                INSERT INTO productos_mejor_calificados_amazon(nombre, rating)
+                VALUES (%s, %s)
+                """
+                cursor.execute(insertar_datos_query, (row["nombre"], row["rating"]))
 
-    buscador = navegador.find_element(By.ID, "twotabsearchtextbox")
-    buscador.send_keys(producto)
-    time.sleep(1)
-    boton_buscar = navegador.find_element(By.ID, "nav-search-submit-button")
-    boton_buscar.click()
-    time.sleep(1)
+        dbConexion.commit()
+        print("Datos insertados en productos mas pedidos")
+    except Error as e:
+        print(e)
 
-    datos = {"nombre":[],"precio":[],"rating":[]}
+def insertar_datos_desde_csv_4(archivo_csv2):
+    dbConexion, cursor = conectar()
+    try:
+        # Leer el archivo CSV
+        df = pd.read_csv(archivo_csv2)
 
-    for i in range(cantidad_paginas):
-        soup = BeautifulSoup(navegador.page_source, "html5lib")
-        nombres = soup.find_all("span", attrs={"class":"a-size-base-plus a-color-base"})
-        ratings = soup.find_all("span", attrs={"class":"a-icon-alt"})
-        precios = soup.find_all("span", attrs={"class":"a-price-whole"})
-        for nombre, precio, rating, in zip(nombres, precios, ratings):
-            datos["nombre"].append(nombre.text)
-            datos["precio"].append(precio.text)
-            datos["rating"].append(rating.text)
-        boton_siguiente = navegador.find_element(By.LINK_TEXT, "Siguiente")
-        boton_siguiente.click()
-        time.sleep(3)
+        # Iterar sobre las filas y agregarlas a la base de datos
+        for index, row in df.iterrows():
+            # Verificar si hay valores NaN en la fila
+            if row.notna().all():
+                insertar_datos_query = """
+                INSERT INTO productos_mejor_calificados_mercado(nombre, rating)
+                VALUES (%s, %s)
+                """
+                cursor.execute(insertar_datos_query, (row["nombre"], row["rating"]))
 
-    df = pd.DataFrame(datos)
-    df.to_csv("Datasets/productos_amazon2.csv")
+        dbConexion.commit()
+        print("Datos insertados en productos mejor calificados mercado libre")
+    except Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        dbConexion.close()
+def mostrar_top_10_mejor_calificados():
+    # Conectar a la base de datos
+    dbConexion, cursor = conectar()
+    try:
+        # Consulta para obtener los top 10 productos mejor calificados
+        obtener_datos_query = """
+        SELECT nombre, rating FROM productos_mejor_calificados_amazon
+        ORDER BY rating DESC
+        LIMIT 10
+        """
+        cursor.execute(obtener_datos_query)
+        resultados = cursor.fetchall()
 
-
-def buscar_producto_mercadolibre(producto,cantidad_paginas):
-    navegador2 = crear_navegador("https://www.mercadolibre.com.mx/")
-
-    buscador2 = navegador2.find_element(By.ID, "cb1-edit")
-    buscador2.send_keys(producto)
-    time.sleep(1)
-
-    botonbuscar = navegador2.find_element(By.CLASS_NAME,"nav-search-btn")
-    botonbuscar.click()
-    time.sleep(1)
-
-    datos2 = {"nombre":[], "precio": [], "rating": []}
-
-    for i in range(cantidad_paginas):
-        soup2 = BeautifulSoup(navegador2.page_source, "html5lib")
-        nombres = soup2.find_all("h2", class_="ui-search-item__title")
-        ratings = soup2.find_all("span", class_="andes-visually-hidden")
-        precios = soup2.find_all("span", class_="andes-money-amount")
-
-        for nombre, precio, rating, in zip(nombres, precios, ratings):
-            datos2["nombre"].append(nombre.text)
-            datos2["precio"].append(precio.text)
-            datos2["rating"].append(rating.text)
-
-        print("Esperando a que desaparezca el banner de cookies...")
-        WebDriverWait(navegador2, 5).until(
-            EC.invisibility_of_element_located((By.CLASS_NAME, "div.cookie-consent-banner-opt-out")))
-        print("Banner de cookies ha desaparecido.")
-
-        try:
-            boton_siguiente = WebDriverWait(navegador2, 5).until(
-                EC.element_to_be_clickable((By.CLASS_NAME, "andes-pagination__button--next"))
-            )
-            # Desplazar la página para que el botón "Siguiente" esté dentro del área visible
-            navegador2.execute_script("arguments[0].scrollIntoView();", boton_siguiente)
-
-            # Hacer clic en el botón "Siguiente"
-            boton_siguiente.click()
-        except:
-            print("No se pudo hacer clic en el botón 'Siguiente'.")
-            time.sleep(1)
-
-    df = pd.DataFrame(datos2)
-    df.to_csv("Datasets/productos_mercadolibre.csv")
-
-if __name__ == "__main__":
-    buscar_producto_amazon("juegos xbox x", 1)
-    buscar_producto_mercadolibre("juegos xbox x",1)
+        # Convertir los resultados a un DataFrame de pandas para mostrar
+        df = pd.DataFrame(resultados, columns=['nombre', 'rating'])
+        print("Top 5 productos mejor calificados (de mayor a menor):")
+        print(df)
+    except Error as e:
+        print(e)
 
 
+def mostrar_top_10_mejor_calificados_mercado():
+    # Conectar a la base de datos
+    dbConexion, cursor = conectar()
+    try:
+        # Consulta para obtener los top 10 productos mejor calificados de mercado libre
+        obtener_datos_query = """
+                SELECT nombre, rating 
+                FROM productos_mejor_calificados_mercado
+                WHERE rating NOT LIKE 'Más relevantes' AND rating != ''
+                ORDER BY CAST(SUBSTRING_INDEX(rating, ' ', 1) AS DECIMAL(3,2)) DESC
+                LIMIT 10
+                """
+        cursor.execute(obtener_datos_query)
+        resultados = cursor.fetchall()
+
+        # Convertir los resultados a un DataFrame de pandas para mostrar
+        df = pd.DataFrame(resultados, columns=['nombre', 'rating'])
+        print("Top 10 productos mejor calificados en Mercado Libre (de mayor a menor):")
+        print(df)
+    except Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        dbConexion.close()
 
 
+
+def crear_tabla_top_10_mejor_calificados_mercado():
+    dbConexion, cursor = conectar()
+    try:
+        crear_tabla_query = """
+        CREATE TABLE IF NOT EXISTS top_10_mejor_calificados_mercado (
+            nombre VARCHAR(255),
+            rating VARCHAR(255)
+        )
+        """
+        cursor.execute(crear_tabla_query)
+        dbConexion.commit()
+        print("Tabla top_10_mejor_calificados_mercado creada")
+    except Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        dbConexion.close()
+
+
+def top_10_mejor_calificados_amazon():
+    dbConexion, cursor = conectar()
+    try:
+        crear_tabla_query = """
+        CREATE TABLE IF NOT EXISTS top_10_mejor_calificados_amazon (
+            nombre VARCHAR(255),
+            rating varchar(255)
+        )
+        """
+        cursor.execute(crear_tabla_query)
+        dbConexion.commit()
+        print("Tabla top_10_mejor_calificados creada")
+    except Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        dbConexion.close()
+
+def insertar_10_mejor_calificados_mercado():
+    dbConexion, cursor = conectar()
+    try:
+        # Consulta para obtener los top 10 productos mejor calificados de mercado libre
+        obtener_datos_query = """
+        SELECT nombre, rating FROM productos_mejor_calificados_mercado
+        ORDER BY rating DESC
+        LIMIT 10
+        """
+        cursor.execute(obtener_datos_query)
+        resultados = cursor.fetchall()
+
+        # Insertar los datos en la nueva tabla
+        insertar_datos_query = """
+        INSERT INTO top_10_mejor_calificados_mercado (nombre, rating)
+        VALUES (%s, %s)
+        """
+        cursor.executemany(insertar_datos_query, resultados)
+        dbConexion.commit()
+        print("Top 10 productos mejor calificados de mercado libre insertados")
+    except Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        dbConexion.close()
+def insertar_10_mejor_calificados_amazon():
+    dbConexion, cursor = conectar()
+    try:
+        # Consulta para obtener los top 5 productos mejor calificados
+        obtener_datos_query = """
+        SELECT nombre, rating FROM productos_mejor_calificados_amazon
+        ORDER BY rating DESC
+        LIMIT 10
+        """
+        cursor.execute(obtener_datos_query)
+        resultados = cursor.fetchall()
+
+        # Insertar los datos en la nueva tabla
+        insertar_datos_query = """
+        INSERT INTO top_10_mejor_calificados_amazon (nombre, rating)
+        VALUES (%s, %s)
+        """
+        cursor.executemany(insertar_datos_query, resultados)
+        dbConexion.commit()
+        print("Top 5 productos mejor calificados amazon insertados")
+    except Error as e:
+        print(e)
+    finally:
+        cursor.close()
+        dbConexion.close()
+
+def crear_tabla_comparativa_precios():
+    dbConexion, cursor = conectar()
+    try:
+        crear_tabla_query = """
+        CREATE TABLE IF NOT EXISTS comparativa_precios (
+            plataforma VARCHAR(255),
+            promedio_precio decimal(10,2)
+        )
+        """
+        cursor.execute(crear_tabla_query)
+        dbConexion.commit()
+        print("Tabla comparativa_precios creada")
+    except Error as e:
+        print(e)
+
+
+def calcular_e_insertar_promedios():
+    dbConexion, cursor = conectar()
+    try:
+        # Calcular promedio de precios en Amazon
+        cursor.execute("SELECT AVG(CAST(precio AS DECIMAL(10, 2))) FROM amazon")
+        promedio_amazon = cursor.fetchone()[0]
+
+        cursor.execute("SELECT AVG(CAST(REPLACE(precio, '$', '') AS DECIMAL(10, 2))) FROM mercado_libre")
+        promedio_mercado = cursor.fetchone()[0]
+
+        # Insertar los promedios en la tabla comparativa
+        insertar_datos_query = """
+        INSERT INTO comparativa_precios (plataforma, promedio_precio)
+        VALUES (%s, %s)
+        """
+        cursor.executemany(insertar_datos_query, [("Amazon", promedio_amazon), ("Mercado Libre", promedio_mercado)])
+        dbConexion.commit()
+        print("Promedios de precios insertados en tabla comparativa")
+    except Error as e:
+        print(e)
+
+
+if __name__ == "_main_":
+    archivo_csv_amazon = "Datasets/productos_amazon.csv"
+    archivo_csv_mercado = "Datasets/productos_mercadolibre.csv"
+
+    # Creación de tablas para Amazon
+    crear_tabla_amazon()
+    crear_tabla_productos_mejor_calificados_amazon()
+    top_10_mejor_calificados_amazon()
+
+    # Insertar datos en tablas de Amazon
+    insertar_datos_desde_csv(archivo_csv_amazon)
+    insertar_datos_desde_csv_3(archivo_csv_amazon)
+
+    # Mostrar y almacenar los top 10 productos mejor calificados de Amazon
+    mostrar_top_10_mejor_calificados()
+    insertar_10_mejor_calificados_amazon()
+
+    # Creación de tablas para Mercado Libre
+    crear_tabla_mercado()
+    crear_tabla_productos_mejor_calificados_mercado()
+    crear_tabla_top_10_mejor_calificados_mercado()
+
+    # Insertar datos en tablas de Mercado Libre
+    insertar_datos_desde_csv_2(archivo_csv_mercado)
+    insertar_datos_desde_csv_4(archivo_csv_mercado)
+
+    # Mostrar y almacenar los top 10 productos mejor calificados de Mercado Libre
+    mostrar_top_10_mejor_calificados_mercado()
+    insertar_10_mejor_calificados_mercado()
+
+    crear_tabla_comparativa_precios()
+    calcular_e_insertar_promedios()

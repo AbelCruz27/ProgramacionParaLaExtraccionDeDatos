@@ -1,0 +1,30 @@
+.Select{
+    color: rgba(156, 81, 81, 0.95);
+}
+
+.nav-pills .nav-link{
+    color: #edabf0;
+}
+
+
+.nav-pills .nav-link.active {
+    color: #fff; /* Cambia el color del texto */
+    background-color: #ff0090; /* Cambia el color de fondo */
+}
+
+.SIDEBAR_STYLE{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 16rem;
+    padding: 2rem 1rem;
+    background-color: #18b613;
+}
+
+
+.CONTENT_STYLE{
+    margin-left: 18rem;
+    margin-right: 2rem;
+    padding: 2rem 1rem;
+}

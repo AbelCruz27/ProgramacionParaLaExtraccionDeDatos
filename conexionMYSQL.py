@@ -1,6 +1,6 @@
 # mysql-connector-python
 # SQLAlchemy
-from mysqllll.connector import connect, Error
+from mysql.connector import connect, Error
 
 def conectar():
     try:

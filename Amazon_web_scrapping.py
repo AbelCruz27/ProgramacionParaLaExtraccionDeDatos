@@ -46,11 +46,8 @@ def buscar_producto_amazon(producto, cantidad_paginas):
         boton_siguiente.click()
         time.sleep(2)
 
-    df = pd.DataFrame(datos)
-    df.to_csv("Datasets/productos_amazon3.csv")
+    df1 = pd.DataFrame(datos)
+    df1.to_csv("Datasets/productos_amazon2.csv")
 
-
-if __name__ == "__main__":
-    buscar_producto_amazon("zapatillas deportivas", 1)
-
+    navegador.close()
 
