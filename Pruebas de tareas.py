@@ -1,30 +1,22 @@
 import pandas as pd
 
-def unir_archivos_csv2(archivo1, archivo2, archivo_salida):
-    df1 = pd.read_csv(archivo1)
-    df2 = pd.read_csv(archivo2)
+def obtener_estadisticas():
+    # Cargar los datos desde el archivo CSV
+    df = pd.read_csv('Alviery/cotizacion.csv', sep=';',decimal=',',thousands='.')
 
-    # Agregar la información adicional de df2 a las columnas correspondientes de df1
-    df_final = pd.concat([df1, df2], axis=1)
+    # Seleccionar las columnas de interés (a partir de la segunda)
+    columnas_de_interes = ['Final', 'Máximo', 'Mínimo', 'Volumen', 'Efectivo']
+    df_seleccionado = df[columnas_de_interes]
 
-    # Guardar el DataFrame resultante en un nuevo archivo CSV
-    df_final.to_csv(archivo_salida)
+    # Calcular los estadísticos
+    minimos = df_seleccionado.min()
+    maximos = df_seleccionado.max()
+    medias = df_seleccionado.mean()
 
-    return df_final
+    # Crear un DataFrame con los resultados
+    resultados = pd.DataFrame({'Mínimo': minimos, 'Máximo': maximos, 'Media': medias})
 
-if __name__ == "__main__":
-    archivo1 = "Datasets/EmpleadosFinal.csv"
-    archivo2 = "Datasets/Informacionextra.csv"
-    archivo_salida = "Datasets/EmpleadosCompleto.csv"
+    # Imprimir los resultados
+    print(resultados)
 
-    unir_archivos_csv2(archivo1, archivo2, archivo_salida)
-
-
-
-
-
-
-
-
-
-
+obtener_estadisticas()

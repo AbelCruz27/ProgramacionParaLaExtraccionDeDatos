@@ -9,6 +9,7 @@ import pandas as pd
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+
 def crear_navegador(url):
     driver = ChromeDriverManager()
     s = Service(driver.install())
@@ -18,18 +19,19 @@ def crear_navegador(url):
     navegador.get(url)
     return navegador
 
-def buscar_producto_mercadolibre(producto,cantidad_paginas):
+
+def buscar_producto_mercadolibre(producto, cantidad_paginas):
     navegador2 = crear_navegador("https://www.mercadolibre.com.mx/")
 
     buscador2 = navegador2.find_element(By.ID, "cb1-edit")
     buscador2.send_keys(producto)
     time.sleep(1)
 
-    botonbuscar = navegador2.find_element(By.CLASS_NAME,"nav-search-btn")
+    botonbuscar = navegador2.find_element(By.CLASS_NAME, "nav-search-btn")
     botonbuscar.click()
     time.sleep(1)
 
-    datos2 = {"nombre":[], "precio": [], "rating": []}
+    datos2 = {"nombre": [], "precio": [], "rating": []}
 
     for i in range(cantidad_paginas):
         soup2 = BeautifulSoup(navegador2.page_source, "html5lib")
@@ -41,11 +43,6 @@ def buscar_producto_mercadolibre(producto,cantidad_paginas):
             datos2["nombre"].append(nombre.text)
             datos2["precio"].append(precio.text)
             datos2["rating"].append(rating.text)
-
-        print("Esperando a que desaparezca el banner de cookies...")
-        WebDriverWait(navegador2, 5).until(
-            EC.invisibility_of_element_located((By.CLASS_NAME, "div.cookie-consent-banner-opt-out")))
-        print("Banner de cookies ha desaparecido.")
 
         try:
             boton_siguiente = WebDriverWait(navegador2, 5).until(
@@ -64,8 +61,9 @@ def buscar_producto_mercadolibre(producto,cantidad_paginas):
 
     # filtrar los datos
     df1 = df[~df['rating'].str.contains("Más relevantes|,")]
-    df2 = df1.dropna()  #eliminar filas con valores vacíos
-    df2.to_csv("Datasets/productos_mercadolibre.csv")
+    df2 = df1.dropna()  # eliminar filas con valores vacíos
+    df2.to_csv("C:/Users/abelc/PycharmProjects/Programacion Para La Extraccion De Datos/Datasets/productos_mercadolibre.csv")
+
 
 if __name__ == "__main__":
-    buscar_producto_mercadolibre("Nike", 2)
+    buscar_producto_mercadolibre("tenis adidas", 4)

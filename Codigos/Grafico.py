@@ -6,7 +6,7 @@ import pandas as pd
 import plotly.express as px
 import mysql.connector
 
-#Función para conectar a la db con mysql
+#función para conectar a la db con mySQL
 def conectar():
     try:
         dbConexion = mysql.connector.connect(
@@ -30,29 +30,24 @@ def obtener_datos(query):
     dbConexion.close()
     return resultados
 
-
 def convertir_a_dataframe(resultados, columnas):
     return pd.DataFrame(resultados, columns=columnas)
 
-# Consulta para obtener datos de comparativa de precios
+
 query_comparativa = "SELECT plataforma, promedio_precio FROM comparativa_precios"
 
-#consulta para el top 10 de mercado libre
 query_top_10_calificados_mercado = """
 SELECT nombre, rating 
 FROM top_10_mejor_calificados_mercado 
-WHERE nombre LIKE '%Adidas%' OR nombre LIKE '%adidas%'
 """
 
-#consulta para el top 10 de Amazon
 query_top_10_calificados_amazon = """
 SELECT nombre, rating 
 FROM top_10_mejor_calificados_amazon
 """
 
-# Inicializar la aplicación Dash
+# Iniciar la aplicación Dash
 app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY], suppress_callback_exceptions=True)
-
 
 sidebar = html.Div(
     [
@@ -84,12 +79,12 @@ def render_page_content(pathname):
         return html.P("")
 
     elif pathname == "/top-10-calificados-mercado":
-        #convertir los datos en DataFrame
+        #obtener y convertir los datos en DataFrame
         datos_top_10_calificados_mercado = convertir_a_dataframe(
             obtener_datos(query_top_10_calificados_mercado), ['nombre', 'rating']
         )
 
-        #crear el gráfico con Plotly Express
+        # Crear el gráfico utilizando Plotly Express
         fig = px.bar(
             datos_top_10_calificados_mercado, x='nombre', y='rating',
             title="Top 10 Productos Mejor Calificados en Mercado Libre (Adidas)",
@@ -110,12 +105,12 @@ def render_page_content(pathname):
         ])
 
     elif pathname == "/top-10-calificados-amazon":
-        #convertir los datos en DataFrame
+        #obtener y convertir los datos en DataFrame
         datos_top_10_calificados_amazon = convertir_a_dataframe(
             obtener_datos(query_top_10_calificados_amazon), ['nombre', 'rating']
         )
 
-        #crear el gráfico con Plotly Express
+        #crear el gráfico utilizando Plotly Express
         fig = px.bar(
             datos_top_10_calificados_amazon, x='nombre', y='rating',
             title="Top 10 Productos Mejor Calificados en Amazon",
@@ -136,10 +131,10 @@ def render_page_content(pathname):
         ])
 
     elif pathname == "/comparativa-precios":
-        #convertir los datos en DataFrame
+        #obtener y convertir los datos en DataFrame
         datos_comparativa = convertir_a_dataframe(obtener_datos(query_comparativa), ['plataforma', 'promedio_precio'])
 
-        #crear el gráfico con Plotly Express
+        #crear el gráfico utilizando Plotly Express
         fig = px.bar(datos_comparativa, x='plataforma', y='promedio_precio',
                      title="Grafica de barras en precio promedio",
                      labels={'plataforma': 'Plataforma', 'promedio_precio': 'Precio Promedio'})
@@ -154,7 +149,7 @@ def render_page_content(pathname):
 
         return html.Div([
             table,
-            dcc.Graph(figure=fig,config={'displayModeBar': False})
+            dcc.Graph(figure=fig, config={'displayModeBar': False})
         ])
 
     return html.Div(
@@ -165,7 +160,6 @@ def render_page_content(pathname):
         ],
         className="p-3 bg-light rounded-3",
     )
-
 
 if __name__ == "__main__":
     app.run_server(debug=True)
