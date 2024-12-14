@@ -1,0 +1,16 @@
+,Unnamed: 0,Departamento,Id,Nombre,Edad,Salario,Ventas,Dirección,Teléfono,Estado Civil,Correo,Años de Experiencia
+0,0,Ventas,1001,Alejandro,31,41000,20000,Calle 123,555-1234,Casado,juan@example.com,6
+1,1,Ventas,1002,María,26,43000,18000,Avenida 456,555-5678,Soltero,ana@example.com,4
+2,2,HR,2001,Santiago,30,38000,15000,Plaza Principal,555-9876,Casado,luis@example.com,7
+3,3,HR,2002,Carla,28,39000,17000,Carrera 789,555-3456,Soltero,maria@example.com,5
+4,4,IT,3001,Daniel,33,51000,25000,Calle Secundaria,555-6543,Casado,pedro@example.com,8
+5,0,HR,2009,Ricardo,32,39000,17000,Avenida Central,555-4321,Soltero,sofia@example.com,6
+6,1,IT,3007,Sara,29,53000,29000,Calle Norte,555-2468,Casado,luisa@example.com,5
+7,2,Ventas,1007,Martín,30,46000,23000,Calle Sur,555-8642,Soltero,diego@example.com,3
+8,3,HR,2010,Lucía,28,38000,16000,Avenida Este,555-1357,Casado,julieta@example.com,6
+9,4,IT,3008,Antonio,34,52000,28000,Avenida Oeste,555-9753,Soltero,gabriel@example.com,7
+10,0,Ventas,1012,Diego,31,48000,25000,Calle Poniente,555-5137,Casado,valeria@example.com,4
+11,1,HR,2016,Daniela,32,40000,18000,Callejón del Recuerdo,555-6987,Soltero,fernando@example.com,8
+12,2,IT,3015,Lucas,30,55000,31000,Callejuela Estrecha,555-7852,Casado,natalia@example.com,6
+13,3,Ventas,1013,Julián,34,49000,26000,Plaza Pequeña,555-3269,Soltero,roberto@example.com,5
+14,4,HR,2017,María,27,39000,17000,Avenida Grande,555-9523,Casado,ana@example.com,9
